@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 
-
+// Componente Square: representa un cuadro individual en el tablero
 function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
@@ -10,17 +10,25 @@ function Square({ value, onSquareClick }) {
   );
 }
 
+// Componente Board: representa el tablero del juego
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
+    // Verificar si ya hay un ganador o si el cuadro ya está marcado
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
+
+    // Crear una copia del arreglo de cuadros
     const nextSquares = squares.slice();
+
+    // Marcar el cuadro con 'X' u 'O' según el turno actual
     if (xIsNext) {
       nextSquares[i] = 'X';
     } else {
       nextSquares[i] = 'O';
     }
+
+    // Llamar a la función onPlay para actualizar los cuadros
     onPlay(nextSquares);
   }
 
@@ -32,6 +40,7 @@ function Board({ xIsNext, squares, onPlay }) {
     status = 'Next player: ' + (xIsNext ? 'X' : 'O');
   }
 
+  // Renderizar el tablero y los cuadros
   return (
     <>
       <div className="status">{status}</div>
@@ -54,6 +63,7 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+// Componente Game: representa el juego completo
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
@@ -61,15 +71,20 @@ export default function Game() {
   const currentSquares = history[currentMove];
 
   function handlePlay(nextSquares) {
+    // Crear una nueva historia con los cuadros actualizados
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+
+    // Actualizar la historia y el movimiento actual
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
   function jumpTo(nextMove) {
+    // Cambiar al movimiento seleccionado
     setCurrentMove(nextMove);
   }
 
+  // Generar la lista de movimientos como botones para retroceder a un estado anterior
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
@@ -84,6 +99,7 @@ export default function Game() {
     );
   });
 
+  // Renderizar el juego con el tablero y la lista de movimientos
   return (
     <div className="game">
       <div className="game-board">
@@ -96,22 +112,26 @@ export default function Game() {
   );
 }
 
+// Función calculateWinner: determina si hay un ganador en el juego
 function calculateWinner(squares) {
   const lines = [
-    [0, 1, 2],
+    [0, 1, 2],  // Filas
     [3, 4, 5],
     [6, 7, 8],
-    [0, 3, 6],
+    [0, 3, 6],  // Columnas
     [1, 4, 7],
     [2, 5, 8],
-    [0, 4, 8],
+    [0, 4, 8],  // Diagonales
     [2, 4, 6],
   ];
+
+  // Verificar si alguna línea tiene el mismo valor en todos sus cuadros
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return squares[a]; // Retornar el valor del ganador ('X' u 'O')
     }
   }
-  return null;
+
+  return null; 
 }
